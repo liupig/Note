@@ -1,0 +1,166 @@
+图像通常包括二值图像、灰度图像和彩色图像。
+
+1.二值图像
+二值图像中任何一个点非黑即白，要么为白色（像素为255），要么为黑色（像素为0）。将灰度图像转换为二值图像的过程，常通过依次遍历判断实现，如果像素>=127则设置为255，否则设置为0。
+
+2.灰度图像
+灰度图像除了黑和白，还有灰色，它把灰度划分为256个不同的颜色，图像看着也更为清晰。将彩色图像转换为灰度图是图像处理的最基本预处理操作，通常包括下面几种方法：
+(1) 浮点算法：Gray=R0.3+G0.59+B0.11
+(2) 整数方法：Gray=(R30+G59+B11)/100
+(3) 移位方法：Gray=(R28+G151+B77)>>8;
+(4) 平均值法：Gray=（R+G+B）/3;(此程序采用算法)
+(5) 仅取绿色：Gray=G；
+(6) 加权平均值算法：根据光的亮度特性，公式: R=G=B=R0.299+G*0.587+B0.144
+
+通过上述任一种方法求得Gray后，将原来的RGB(R,G,B)中的R,G,B统一用Gray替换，形成新的颜色RGB(Gray,Gray,Gray)，用它替换原来的RGB(R,G,B)就是灰度图了。改变象素矩阵的RGB值，来达到彩色图转变为灰度图。
+
+3.彩色图像
+彩色图像是RGB图像，RGB表示红、绿、蓝三原色，计算机里所有颜色都是三原色不同比例组成的，即三色通道。
+
+
+
+1.读入图像
+OpenCV读图像主要调用下面函数实现：
+
+img = cv2.imread(文件名,[,参数])
+参数(1) cv2.IMREAD_UNCHANGED (图像不可变)
+参数(2) cv2.IMREAD_GRAYSCALE (灰度图像)
+参数(3) cv2.IMREAD_COLOR (读入彩色图像)
+参数(4) cv2.COLOR_BGR2RGB (图像通道BGR转成RGB)
+
+2.显示图像
+显示图像调用函数如下：
+
+cv2.imshow(窗口名, 图像名)
+
+3.窗口等待
+调用函数如下：
+
+cv2.waitKey(delay)
+键盘绑定函数，共一个参数，表示等待毫秒数，将等待特定的几毫秒，看键盘是否有输入，返回值为ASCII值。如果其参数为0，则表示无限期的等待键盘输入；参数>0表示等待delay毫秒；参数<0表示等待键盘单击。
+
+4.删除所有窗口
+调用函数如下：
+
+cv2.destroyAllWindows() 删除所有窗口
+cv2.destroyWindows() 删除指定的窗口
+
+5.写入图片
+调用函数如下：
+
+retval = cv2.imwrite(文件地址, 文件名)
+
+下面代码是读入图片并显示保存。
+
+Code:
+import cv2
+
+dog = cv2.imread("dog.jpg", cv2.IMREAD_UNCHANGED)
+# dog.imshow()
+cv2.imshow("dog", dog)
+cv2.imshow("dog2", dog)
+
+key = cv2.waitKey(0)
+if key == 27:
+    cv2.destroyAllWindows()
+
+# cv2.destroyAllWindows()
+cv2.destroyWindow("dog2")
+cv2.waitKey(delay=5000)
+
+cv2.imwrite("dog2.jpg", dog)
+
+
+
+三.OpenCV像素处理
+1.读取像素
+灰度图像直接返回灰度值，彩色图像则返回B、G、R三个分量。注意OpenCV读取图像是BGR存储显示，需要转换为RGB再进行图像处理。
+
+灰度图像：返回值 = 图像(位置参数)
+eg: test=img[88,42]
+彩色图像：返回值 = 图像[位置元素, 0 | 1 | 2 ] 获取BGR三个通道像素
+eg: blue=img[88,142,0] green=img[88,142,1] red=img[88,142,2]
+
+2.修改图像
+修改图像如果是灰度图像则直接赋值新像素即可，彩色图像依次给三个值赋值即可。
+
+灰度图像：
+img[88,142] = 255
+彩色图像：
+img[88,142, 0] = 255
+img[88,142, 1] = 255
+img[88,142, 2] = 255
+彩色图像：方法二
+img[88,142] = [255, 255, 255]
+
+下面代码是获取像素及修改的操作。
+
+# -*- coding:utf-8 -*-
+import cv2
+
+#读取图片
+img = cv2.imread("test.jpg", cv2.IMREAD_UNCHANGED)
+test = img[88,142]
+print test
+img[88,142] = [255, 255, 255]
+print test
+
+#分别获取BGR通道像素
+blue = img[88,142,0]
+print blue
+green = img[88,142,1]
+print green
+red = img[88,142,2]
+print red
+
+#显示图像
+cv2.imshow("Demo", img)
+
+#等待显示
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+
+#写入图像
+cv2.imwrite("testyxz.jpg", img)
+
+输出结果如下所示：
+[158 107 64]
+[255 255 255]
+255
+255
+255
+
+下面代码是将行为100到200、列150到250的像素区域设置为白色。
+
+# -*- coding:utf-8 -*-
+import cv2
+
+#读取图片
+img = cv2.imread("test.jpg", cv2.IMREAD_UNCHANGED)
+
+#该区域设置为白色
+img[100:200, 150:250] = [255,255,255]
+
+#显示图像
+cv2.imshow("Demo", img)
+
+#等待显示
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+
+#写入图像
+cv2.imwrite("testyxz.jpg", img)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
