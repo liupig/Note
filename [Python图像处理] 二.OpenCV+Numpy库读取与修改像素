@@ -1,0 +1,202 @@
+https://blog.csdn.net/Eastmount/article/details/82120114
+
+1.传统读取像素方法
+2.传统修改像素方法
+3.Numpy读取像素方法
+4.Numpy修改像素方法
+
+
+一.传统读取像素方法
+1.灰度图像，返回灰度值。
+返回值=图像(位置参数)，例：p = img[88,142] print§
+
+# -*- coding:utf-8 -*-
+import cv2
+
+#读取图片
+img = cv2.imread("picture.bmp", cv2.IMREAD_UNCHANGED)
+
+#灰度图像
+p = img[88, 142]
+print(p)
+
+#显示图像
+cv2.imshow("Demo", img)
+
+#等待显示
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+
+#写入图像
+cv2.imwrite("testyxz.jpg", img)
+
+输出结果如下图所示：[131 131 131]，由于该图是24位BMP，B=G=R输出三个相同的结果，有的图像仅有一个像素点则输出一个值。
+
+
+2.BGR图像，返回值为B、G、R的值。
+例：
+b = img[78, 125, 0] print(b)
+g = img[78, 125, 1] print(g)
+r = img[78,125, 2] print®
+
+# -*- coding:utf-8 -*-
+import cv2
+
+#读取图片
+img = cv2.imread("test.jpg", cv2.IMREAD_UNCHANGED)
+
+#BGR图像
+b = img[78, 125, 0]
+print(b)
+g = img[78, 125, 1]
+print(g)
+r = img[78, 125, 2]
+print(r)
+
+#方法二
+bgr = img[78, 125]
+print(bgr)
+
+#显示图像
+cv2.imshow("Demo", img)
+
+#等待显示
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+
+#写入图像
+cv2.imwrite("testyxz.jpg", img)
+
+
+
+二.传统修改像素方法
+1.修改单个像素值
+BGR图像可以通过位置参数直接访问像素值并进行修改，输出结果如下所示：
+
+# -*- coding:utf-8 -*-
+import cv2
+
+#读取图片
+img = cv2.imread("test.jpg", cv2.IMREAD_UNCHANGED)
+
+#BGR图像
+print(img[78, 125, 0])
+print(img[78, 125, 1])
+print(img[78, 125, 2])
+
+#修改像素
+img[78, 125, 0] = 255
+img[78, 125, 1] = 255
+img[78, 125, 2] =255
+
+print(img[78, 125])
+img[78, 125] = [10, 10, 10]
+print(img[78, 125, 0])
+print(img[78, 125, 1])
+print(img[78, 125, 2])
+
+
+#方法二
+print(img[78, 125])
+img[78, 125] = [10, 10, 10]
+print(img[78, 125])
+
+输出结果如下所示，通过两种方法分别将B、G、R像素值修改为255和0。
+
+
+
+2.修改区域像素
+通过访问图像数组的位置区域实现区域像素修改，比如 [100:150,400:500] 是访问第100到150行，400到500列的区域，再对该区域像素进行修改。代码如下所示：
+
+# -*- coding:utf-8 -*-
+import cv2
+
+#读取图片
+img = cv2.imread("test.jpg", cv2.IMREAD_UNCHANGED)
+
+#BGR图像
+img[100:150, 400:500] = [255, 255, 0]
+
+#显示图像
+cv2.imshow("Demo", img)
+
+#等待显示
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+
+#写入图像
+cv2.imwrite("testyxz.jpg", img)
+
+
+输出结果如下图所示，[255, 255, 0]是浅蓝色。
+
+三.Numpy读取像素方法
+使用Numpy进行像素读取，调用方式如下：
+返回值 = 图像.item(位置参数)
+
+# -*- coding:utf-8 -*-
+import cv2
+import numpy
+
+#读取图片
+img = cv2.imread("test.jpg", cv2.IMREAD_UNCHANGED)
+
+#Numpy读取像素
+blue = img.item(78, 100, 0)
+green = img.item(78, 100, 1)
+red = img.item(78, 100, 2)
+print(blue)
+print(green)
+print(red)
+
+#显示图像
+cv2.imshow("Demo", img)
+
+#等待显示
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+
+输出结果如下，注意OpenCV读取图像通道是BGR，也可以转换成RGB在进行处理。
+
+四.Numpy修改像素方法
+使用Numpy的itemset函数修改像素，调用方式如下：
+图像.itemset(位置, 新值)
+例如：img.itemset((88,99), 255)
+
+# -*- coding:utf-8 -*-
+import cv2
+import numpy
+
+#读取图片
+img = cv2.imread("test.jpg", cv2.IMREAD_UNCHANGED)
+
+#Numpy读取像素
+print(img.item(78, 100, 0))
+print(img.item(78, 100, 1))
+print(img.item(78, 100, 2))
+img.itemset((78, 100, 0), 100)
+img.itemset((78, 100, 1), 100)
+img.itemset((78, 100, 2), 100)
+print(img.item(78, 100, 0))
+print(img.item(78, 100, 1))
+print(img.item(78, 100, 2))
+
+输出结果如下：
+155
+104
+61
+100
+100
+100
+
+也可以同时输出B、G、R三个值，核心代码如下：
+
+print(img[78, 78])
+img.itemset((78, 78, 0), 0)
+img.itemset((78, 78, 1), 0)
+img.itemset((78, 78, 2), 0)
+print(img[78, 78])
+#[155 104  61]
+#[0 0 0]
+
+
