@@ -1,0 +1,137 @@
+https://blog.csdn.net/Eastmount/article/details/83548652
+
+1.阈值化
+2.二进制阈值化
+3.反二进制阈值化
+4.截断阈值化
+5.反阈值化为0
+6.阈值化为0
+
+一. 阈值化
+
+图像的二值化或阈值化（Binarization）旨在提取图像中的目标物体，将背景以及噪声区分开来。通常会设定一个阈值T，通过T将图像的像素划分为两类：大于T的像素群和小于T的像素群。
+灰度转换处理后的图像中，每个像素都只有一个灰度值，其大小表示明暗程度。二值化处理可以将图像中的像素划分为两类颜色，常用的二值化算法如公式1所示：
+
+{ 
+Y=0，gray<T
+Y=255，gray>=T
+}
+ 
+
+
+当灰度Gray小于阈值T时，其像素设置为0，表示黑色；当灰度Gray大于或等于阈值T时，其Y值为255，表示白色。
+Python OpenCV中提供了阈值函数threshold()实现二值化处理，其公式及参数如下图所示：
+
+
+retval, dst = cv2.threshold(src, thresh, maxval, type)
+
+retval 阈值 
+dst  处理结果
+src 源图像
+thresh 阈值
+maxval 最大值
+type  类型
+
+常用的方法如下表所示，其中函数中的参数Gray表示灰度图，参数127表示对像素值进行分类的阈值，参数255表示像素值高于阈值时应该被赋予的新像素值，最后一个参数对应不同的阈值处理方法。
+
+
+
+二. 二进制阈值化
+
+(1) 大于等于127的像素点的灰度值设定为最大值（如8位灰度值最大为255）
+(2) 灰度值小于127的像素点的灰度值设定为0
+例如，163->255，86->0，102->0，201->255。
+
+关键字为 cv2.THRESH_BINARY
+
+cv2.threshold(GrayImage, 127, 255, cv2.THRESH_BINARY)
+
+三. 反二进制阈值化
+该方法与二进制阈值化方法相似，先要选定一个特定的灰度值作为阈值，比如127。新的阈值产生规则如下：
+
+dst(x,y)={ 
+0，ifsrc(x,y)>thresh
+maxVal，otherwise
+}
+
+(1) 大于127的像素点的灰度值设定为0（以8位灰度图为例）
+(2) 小于该阈值的灰度值设定为255
+例如，163->0，86->255，102->255，201->0。
+
+关键字为 cv2.THRESH_BINARY_INV，
+
+
+
+四. 截断阈值化
+该方法需要选定一个阈值，图像中大于该阈值的像素点被设定为该阈值，小于该阈值的保持不变，比如127。新的阈值产生规则如下：
+dst(x,y)={ 
+threshold，ifsrc(x,y)>thresh
+src(x,y)，otherwise
+}
+ 
+
+ 
+
+(1) 大于等于127的像素点的灰度值设定为该阈值127
+(2) 小于该阈值的灰度值不改变
+例如，163->127，86->86，102->102，201->127。
+
+关键字为 cv2.THRESH_TRUNC
+
+
+五. 反阈值化为0
+该方法先选定一个阈值，比如127，接着对图像的灰度值进行如下处理：
+dst(x,y)={ 
+0，ifsrc(x,y)>thresh
+src(x,y)，otherwise
+}
+ 
+
+(1) 大于等于阈值127的像素点变为0
+(2) 小于该阈值的像素点值保持不变
+例如，163->0，86->86，102->102，201->0。
+
+关键字为 cv2.THRESH_TOZERO_INV，
+
+
+六. 阈值化为0
+该方法先选定一个阈值，比如127，接着对图像的灰度值进行如下处理：
+dst(x,y)={ 
+src(x,y)，ifsrc(x,y)>thresh
+0，otherwise
+}
+
+(1) 大于等于阈值127的像素点，值保持不变
+(2) 小于该阈值的像素点值设置为0
+例如，163->163，86->0，102->0，201->201。
+
+关键字为 cv2.THRESH_TOZERO
+
+
+
+#encoding:utf-8
+import cv2  
+import numpy as np  
+import matplotlib.pyplot as plt
+
+#读取图像
+img=cv2.imread('test.jpg')
+lenna_img = cv2.cvtColor(img,cv2.COLOR_BGR2RGB)
+GrayImage=cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)  
+
+#阈值化处理
+ret,thresh1=cv2.threshold(GrayImage,127,255,cv2.THRESH_BINARY)  
+ret,thresh2=cv2.threshold(GrayImage,127,255,cv2.THRESH_BINARY_INV)  
+ret,thresh3=cv2.threshold(GrayImage,127,255,cv2.THRESH_TRUNC)  
+ret,thresh4=cv2.threshold(GrayImage,127,255,cv2.THRESH_TOZERO)  
+ret,thresh5=cv2.threshold(GrayImage,127,255,cv2.THRESH_TOZERO_INV)
+
+#显示结果
+titles = ['Gray Image','BINARY','BINARY_INV','TRUNC','TOZERO','TOZERO_INV']  
+images = [GrayImage, thresh1, thresh2, thresh3, thresh4, thresh5]  
+for i in xrange(6):  
+   plt.subplot(2,3,i+1),plt.imshow(images[i],'gray')  
+   plt.title(titles[i])  
+   plt.xticks([]),plt.yticks([])  
+plt.show()
+
